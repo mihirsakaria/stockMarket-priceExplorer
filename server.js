@@ -3,14 +3,14 @@ import mongoose from "mongoose";
 import connectDB from "./db.js";
 import http from "http";
 import stockModel from "./stockModel.js";
-import { createStock, deleteStock } from "./stockController.js";
+import multer from "multer";
+import { addBulkStocks, createStock, deleteStock } from "./stockController.js";
 
 const PORT = 7000;
-
 const app = express();
 const httpServer = http.createServer(app);
-// app.use(express.bodyParser());
 app.use(express.json({limit: "25mb"}));
+const upload = multer(); 
 
 mongoose.connection.on("connected", async () => {
     try {
@@ -43,7 +43,8 @@ mongoose.connection.on("disconnected", async function () {
 
 app.post('/createStock',createStock);
 app.delete('/deleteStock',deleteStock);
-
+app.post('/addBulkStocks',upload.single("fileObj"),addBulkStocks);
+app.delete('/deleteAllStocks',);
 connectDB();
 
 
