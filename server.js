@@ -4,7 +4,7 @@ import connectDB from "./db.js";
 import http from "http";
 import stockModel from "./stockModel.js";
 import multer from "multer";
-import { addBulkStocks, createStock, deleteStock } from "./stockController.js";
+import { addBulkStocks, createStock, deleteAllStocks, deleteStock } from "./stockController.js";
 
 const PORT = 7000;
 const app = express();
@@ -44,7 +44,7 @@ mongoose.connection.on("disconnected", async function () {
 app.post('/createStock',createStock);
 app.delete('/deleteStock',deleteStock);
 app.post('/addBulkStocks',upload.single("fileObj"),addBulkStocks);
-app.delete('/deleteAllStocks',);
+app.delete('/deleteAllStocks',deleteAllStocks);
 connectDB();
 
 

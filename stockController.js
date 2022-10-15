@@ -158,7 +158,11 @@ export const addBulkStocks = async (req,res)=>{
 
 export const deleteAllStocks = async(req,res)=>{
     try{
-        
+        let deleteStatus = await stockModel.deleteMany({});
+        return res.status(200).send({
+            statusCode : 200,
+            message : `All stocks deleted with status : ${JSON.stringify(deleteStatus)}`
+        });
     }   
     catch(error){
         return res.status(500).send({
