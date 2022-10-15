@@ -100,7 +100,8 @@ export const addBulkStocks = async (req,res)=>{
               obj.Stock = data.SERIES;
               obj.Date = new Date(data.TIMESTAMP);
               obj.Price = data.CLOSE;
-              fileData.push(obj);
+              if(obj.Stock == "EQ")
+                fileData.push(obj); 
             } catch (error) {
               logger.error(`[${reqId}] Error while parsing file `);
               if (!res.headersSent)
@@ -134,7 +135,7 @@ export const addBulkStocks = async (req,res)=>{
               return res.status(200).send({
                 statsCode : 200,
                 status : true,
-                message : `Data succesfully inserted with status : ${insertStatus}`
+                message : `Data succesfully inserted with status : ${JSON.stringify(insertStatus)}`
               });
             } catch (error) {
               if (!res.headersSent)
@@ -164,6 +165,48 @@ export const deleteAllStocks = async(req,res)=>{
             message : `All stocks deleted with status : ${JSON.stringify(deleteStatus)}`
         });
     }   
+    catch(error){
+        return res.status(500).send({
+            statusCode : 500,
+            message : `Internal Server Error : ${error.message}`
+        });
+    }
+}
+
+export const getStockDetails = async(req,res)=>{
+    try{
+        let startTime = req.query.startTime;
+        let endTime = req.query.endTime;
+        let listOfStocks = req.query.listOfStocks;
+        // let listOfStocks;
+        startTime = parseInt(startTime,10);
+        endTime = parseInt(endTime,10);
+        if(startTime > endTime){
+            return res.status(400).send({
+                statsCode : 400,
+                message : "Bad Request : Request not proper"
+            });
+        }
+        let Data;
+        let matchObject = { 
+            $match : {
+                Date : {$gte : new Date(startTime),$lte : new Date(endTime)},
+                // Stock : {$in : listOfStocks}
+                }
+            }
+        // console.log(new Date(startTime),new Date(endTime));
+        if(listOfStocks && listOfStocks!="all"){
+            listOfStocks = listOfStocks.split(",");
+            // console.log(listOfStocks);
+            matchObject["$match"].Stock = {$in : listOfStocks}; 
+        }
+        // console.log(matchObject);
+        Data = await stockModel.aggregate([matchObject,{$project : {_id : 0,__v:0}}]);
+        return res.status(200).send({
+            statsCode : 200,
+            data : Data
+        });
+    }
     catch(error){
         return res.status(500).send({
             statusCode : 500,

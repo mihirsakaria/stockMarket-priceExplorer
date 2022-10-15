@@ -4,7 +4,7 @@ import connectDB from "./db.js";
 import http from "http";
 import stockModel from "./stockModel.js";
 import multer from "multer";
-import { addBulkStocks, createStock, deleteAllStocks, deleteStock } from "./stockController.js";
+import { addBulkStocks, createStock, deleteAllStocks, deleteStock, getStockDetails } from "./stockController.js";
 
 const PORT = 7000;
 const app = express();
@@ -45,6 +45,8 @@ app.post('/createStock',createStock);
 app.delete('/deleteStock',deleteStock);
 app.post('/addBulkStocks',upload.single("fileObj"),addBulkStocks);
 app.delete('/deleteAllStocks',deleteAllStocks);
+app.get('/getStockDetails',getStockDetails);
+
 connectDB();
 
 
