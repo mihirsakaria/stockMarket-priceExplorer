@@ -3,6 +3,7 @@ import { Line } from 'react-chartjs-2'
 
 const Graph = () => {
     const [data, setdata] = useState([])
+    
     const dataset = [];
     for(let i = 0; i<data.length;i++){
         let obj = {};

@@ -178,7 +178,7 @@ export const getStockDetails = async(req,res)=>{
     try{
         let startTime = req.query.startTime;
         let endTime = req.query.endTime;
-        let listOfStocks = req.body.listOfStocks;
+        let listOfStocks = req.query.listOfStocks;
         startTime = parseInt(startTime,10);
         endTime = parseInt(endTime,10);
         if(startTime > endTime){

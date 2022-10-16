@@ -9,13 +9,12 @@ import axios from 'axios'
 import apiService from '../services/api'
 
 const MyForm = (props) => {
-   let {startDate,setstartDate,endDate,setendDate} = props;
+   let {startDate,setstartDate,endDate,setendDate,setdata} = props;
    const [selectedStocks, setselectedStocks] = useState([]);
    const [stocks, setstocks] = useState([]);
-   let initialData;
    apiService.get("http://localhost:7000/getListOfAllStocks").then(res =>{
-    initialData = res.response.data.data;
-    setstocks(initialData);
+
+    setstocks(res.response.data.data.slice(0,4));
    }).catch(error => {
     console.log(error.message);
    })
@@ -29,11 +28,17 @@ const MyForm = (props) => {
         setselectedStocks([selectedStocks.filter((stocks) => stocks !== value)]);
     }
    } 
-//    console.log(onChangeState());
+
    const Submit = (e)=>{
     e.preventDefault();
-    console.log({startDate,endDate,selectedStocks});
-    console.log("Submit button pressed");
+    apiService.get(`http://localhost:7000/getStockDetails?startTime=${new Date(startDate).getTime()}&endTime=${new Date(endDate).getTime()}&listOfStocks=${selectedStocks.toString()}`)
+    .then((res)=>{
+        setdata(res.response.data.data);
+        // console.log();
+    }).catch(error=>{
+        console.log(error.message);
+    });
+
    }
 
 
@@ -55,7 +60,7 @@ const MyForm = (props) => {
                 <FormControl >
                 <FormLabel>Stocks</FormLabel>
                 <div className="flex flex-wrap"
-                            style={{ maxHeight: "150px", overflowY: "scroll" }}>
+                     style={{ maxHeight: "150px", overflowY: "scroll" }}>
                 {
                     stocks.map((stock,index)=>{
                         return (
