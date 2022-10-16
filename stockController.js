@@ -4,7 +4,7 @@ import { parseString } from "@fast-csv/parse";
 export const createStock = async (req,res)=>{
     try{
         const payload = req.body;
-        if(!payload || !payload.stock || !payload.date || !payload.closePrice){
+        if(!payload || !payload.stock || !payload.date || !payload.closePrice || !payload.HighestPrice || !payload.LowestPrice || !payload.OpenPrice){
             return res.status(400).send({
                 statusCode : 400,
                 message : "Bad Request : Payload not appropriate"
@@ -98,9 +98,11 @@ export const addBulkStocks = async (req,res)=>{
               if(data.SERIES == "EQ"){              
                 obj.stock = data.SYMBOL;
                 obj.date = new Date(data.TIMESTAMP);
+                obj.OpenPrice = data.OPEN;
+                obj.HighestPrice = data.HIGH;
+                obj.LowestPrice = data.LOW;
                 obj.closePrice = data.CLOSE;
                 fileData.push(obj);
-                // if(obj.stock == "EQ")
              } 
             } 
             catch (error) {
@@ -181,6 +183,12 @@ export const getStockDetails = async(req,res)=>{
         let listOfStocks = req.query.listOfStocks;
         startTime = parseInt(startTime,10);
         endTime = parseInt(endTime,10);
+        if(!startTime || !endTime || !listOfStocks){
+            return res.status(400).send({
+                statusCode : 400,
+                message : "Bad Request : Either of starttime , endTime or listOfStocks is missing in parameters"
+            })
+        }
         if(startTime > endTime){
             return res.status(400).send({
                 statsCode : 400,
@@ -191,23 +199,14 @@ export const getStockDetails = async(req,res)=>{
         let matchObject = { 
             $match : {
                 date : {$gte : new Date(startTime),$lte : new Date(endTime)},
-                // Stock : {$in : listOfStocks}
                 }
             }
-        // console.log(new Date(startTime),new Date(endTime));
         if(listOfStocks){
             listOfStocks = listOfStocks.split(",");
-            // matchObject["$match"].stock = {$in : listOfStocks}; 
+            matchObject["$match"].stock = {$in : listOfStocks}; 
         }
-        Data = await stockModel.aggregate([{
-            $match: {
-             date: {
-              $gte: new Date(startTime),
-              $lte: new Date(endTime)
-             },
-             stock : {$in : listOfStocks}
-            }
-           }, {
+        // console.log(new Date(startTime),new Date(endTime));
+        Data = await stockModel.aggregate([matchObject, {
             $project: {
              _id: 0,
              __v: 0
@@ -244,6 +243,79 @@ export const listOfAllStocks = async(req,res)=>{
         return res.status(200).send({
             statsCode : 200,
             data : listOfAllStocks.splice(0,100)
+        });
+    }
+    catch(error){
+        return res.status(500).send({
+            statusCode : 500,
+            message : `Internal Server Error : ${error.message}`
+        });
+    }
+}
+
+export const getSingleStockDetails = async (req,res)=>{
+    try{
+        let {startTime,endTime,stockName} = req.query;
+        startTime = parseInt(startTime,10);
+        endTime = parseInt(endTime,10);
+        if(!startTime || !endTime || !stockName){
+            return res.status(400).send({
+                statusCode : 400,
+                message : "Bad Request : Either of starttime , endTime or stockName is missing in parameters"
+            })
+        }
+        if(startTime > endTime){
+            return res.status(400).send({
+                statsCode : 400,
+                message : "Bad Request : Request not proper"
+            });
+        }
+        let data = await stockModel.aggregate([{
+            $match: {
+             date: {
+              $gte: new Date(startTime),
+              $lte: new Date(endTime)
+             },
+             stock: stockName
+            }
+           }, {
+            $project: {
+             _id: 0,
+             __v: 0
+            }
+           }, {
+            $group: {
+             _id: '$date',
+             OpenPrice: {
+              $push: '$OpenPrice'
+             },
+             HighestPrice: {
+              $push: '$HighestPrice'
+             },
+             LowestPrice: {
+              $push: '$LowestPrice'
+             },
+             closePrice: {
+              $push: '$closePrice'
+             }
+            }
+           }]);
+        let returnData = [];
+        for(let i = 0 ;i < data.length;i++){
+            let obj= {};
+            obj.x = data[i]._id;
+            obj.y = [data[i]["OpenPrice"][0],data[i]["HighestPrice"][0],data[i]["LowestPrice"][0],data[i]["closePrice"][0]]
+            returnData.push(obj);
+        }   
+        if(returnData.length == 0){
+            return res.status(404).send({
+                statusCode : 404,
+                data : "No Data found in given range and time"
+            })
+        }
+        return res.status(200).send({
+            statusCode : 200,
+            data : returnData
         });
     }
     catch(error){

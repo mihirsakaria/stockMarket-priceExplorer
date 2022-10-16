@@ -5,7 +5,7 @@ import http from "http";
 import cors from "cors";
 import stockModel from "./stockModel.js";
 import multer from "multer";
-import { addBulkStocks, createStock, deleteAllStocks, deleteStock, getStockDetails, listOfAllStocks } from "./stockController.js";
+import { addBulkStocks, createStock, deleteAllStocks, deleteStock, getSingleStockDetails, getStockDetails, listOfAllStocks } from "./stockController.js";
 
 const PORT = 7000;
 const app = express();
@@ -49,6 +49,7 @@ app.post('/addBulkStocks',upload.single("fileObj"),addBulkStocks);
 app.delete('/deleteAllStocks',deleteAllStocks);
 app.get('/getStockDetails',getStockDetails);
 app.get('/getListOfAllStocks',listOfAllStocks);
+app.get('/getSingleStockDetails',getSingleStockDetails);
 connectDB();
 
 
