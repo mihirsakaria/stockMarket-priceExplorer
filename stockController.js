@@ -89,8 +89,7 @@ export const addBulkStocks = async (req,res)=>{
               return res.status(500).send({
                 Status: false,
                 Message: error.message,
-                StatusCode: 500,
-                Ref: reqId,
+                StatusCode: 500
               });
           })
           .on("data", (data) => {
