@@ -2,16 +2,18 @@ import express from "express";
 import mongoose from "mongoose";
 import connectDB from "./db.js";
 import http from "http";
+import cors from "cors";
 import stockModel from "./stockModel.js";
 import multer from "multer";
 import { addBulkStocks, createStock, deleteAllStocks, deleteStock, getStockDetails, listOfAllStocks } from "./stockController.js";
 
 const PORT = 7000;
 const app = express();
+
 const httpServer = http.createServer(app);
 app.use(express.json({limit: "25mb"}));
 const upload = multer(); 
-
+app.use(cors());
 mongoose.connection.on("connected", async () => {
     try {
         console.log(`Database connection established`);

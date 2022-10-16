@@ -1,8 +1,29 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Line } from 'react-chartjs-2'
 
 const Graph = () => {
+    const [data, setdata] = useState([])
+    const dataset = [];
+    for(let i = 0; i<data.length;i++){
+        let obj = {};
+        obj.label = data[i]._id;
+        obj.data = data[i].closePrice;
+        obj.fill=false;
+        obj.borderColor="red"
+    }
   return (
-    <div>Graph</div>
+    <div>
+        <h1>
+            Graph
+        </h1>
+        <Line
+        data = {{
+            labels : data[0].date,
+            datasets : dataset
+        }}
+        />
+
+    </div>
   )
 }
 
