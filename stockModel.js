@@ -10,6 +10,18 @@ const stockModelSchema = mongoose.Schema(
         type : Date,
         required : true
     },
+    OpenPrice : {
+      type : Number,
+      required : true 
+    },
+    HighestPrice : {
+      type : Number,
+      required : true 
+    },
+    LowestPrice : {
+      type : Number,
+      required : true 
+    },
     closePrice : {
         type : Number,
         required : true 
