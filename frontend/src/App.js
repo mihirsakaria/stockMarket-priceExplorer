@@ -1,14 +1,17 @@
-import logo from './logo.svg';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
-import { Routes, Route, Link } from "react-router-dom";
-import Home from './Home';
-import About from './About';
+import { Navbar } from './components';
+import { DetailedView, Home, NotFound } from './views';
+
 function App() {
+  // console.log(DetailedView,NotFound,navbar);
   return (
-    <div className="App">
+    <div>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="about" element={<About />} />
+        <Route path="/:ticker" element={<DetailedView />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );
