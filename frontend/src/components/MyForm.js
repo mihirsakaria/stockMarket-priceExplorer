@@ -12,12 +12,14 @@ const MyForm = (props) => {
    let {startDate,setstartDate,endDate,setendDate,setmydata} = props;
    const [selectedStocks, setselectedStocks] = useState([]);
    const [stocks, setstocks] = useState([]);
-   apiService.get("http://localhost:7000/getListOfAllStocks").then(res =>{
-
-    setstocks(res.response.data.data.slice(0,4));
-   }).catch(error => {
-    console.log(error.message);
-   })
+   if(stocks.length == 0){
+       apiService.get("http://localhost:7000/getListOfAllStocks").then(res =>{
+    
+        setstocks(res.response.data.data.slice(0,4));
+       }).catch(error => {
+        console.log(error.message);
+       })
+   }
    
    const onChangeState = (e)=>{
     const{value , checked} = e.target;
@@ -44,7 +46,7 @@ const MyForm = (props) => {
 
   return (
     <div>
-        <form onSubmit={Submit} className="p-10">
+        <form onSubmit={Submit} className="p-10 bg-white-400">
             <div className="flex justify-between">
             <FormGroup className="w-1/2 p-4"> 
                 <FormControl>

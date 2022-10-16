@@ -5,7 +5,6 @@ import { Chart } from 'react-chartjs-2'
 ChartJS.register(...registerables);
 
 const Graph = (props) => {
-    // const [data, setdata] = useState([])
     const mydata = props.mydata;
     const COLORS = [[120,28,129],
     [64,67,153],
@@ -34,6 +33,12 @@ const Graph = (props) => {
         data = {{
             labels : label,
             datasets : dataset,
+        }}
+        options={{
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
         }}
         />
 

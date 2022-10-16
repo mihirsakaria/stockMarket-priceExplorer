@@ -243,7 +243,7 @@ export const listOfAllStocks = async(req,res)=>{
         let listOfAllStocks = await stockModel.distinct("stock");
         return res.status(200).send({
             statsCode : 200,
-            data : listOfAllStocks
+            data : listOfAllStocks.splice(0,100)
         });
     }
     catch(error){
