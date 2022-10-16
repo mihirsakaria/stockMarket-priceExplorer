@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { Line } from 'react-chartjs-2'
 
-const Graph = () => {
-    const [data, setdata] = useState([])
+const Graph = (props) => {
+    // const [data, setdata] = useState([])
+    const {data} = props.data;
     
     const dataset = [];
     for(let i = 0; i<data.length;i++){
