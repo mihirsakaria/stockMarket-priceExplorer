@@ -255,27 +255,27 @@ export const listOfAllStocks = async(req,res)=>{
 
 export const getSingleStockDetails = async (req,res)=>{
     try{
-        let {startTime,endTime,stockName} = req.query;
-        startTime = parseInt(startTime,10);
-        endTime = parseInt(endTime,10);
-        if(!startTime || !endTime || !stockName){
+        let {stockName} = req.query;
+        // startTime = parseInt(startTime,10);
+        // endTime = parseInt(endTime,10);
+        if(!stockName){
             return res.status(400).send({
                 statusCode : 400,
                 message : "Bad Request : Either of starttime , endTime or stockName is missing in parameters"
             })
         }
-        if(startTime > endTime){
-            return res.status(400).send({
-                statsCode : 400,
-                message : "Bad Request : Request not proper"
-            });
-        }
+        // if(startTime > endTime){
+        //     return res.status(400).send({
+        //         statsCode : 400,
+        //         message : "Bad Request : Request not proper"
+        //     });
+        // }
         let data = await stockModel.aggregate([{
             $match: {
-             date: {
-              $gte: new Date(startTime),
-              $lte: new Date(endTime)
-             },
+            //  date: {
+            //   $gte: new Date(startTime),
+            //   $lte: new Date(endTime)
+            //  },
              stock: stockName
             }
            }, {
@@ -299,11 +299,15 @@ export const getSingleStockDetails = async (req,res)=>{
               $push: '$closePrice'
              }
             }
+           },{
+            $sort : {
+                _id : 1
+            }
            }]);
         let returnData = [];
         for(let i = 0 ;i < data.length;i++){
             let obj= {};
-            obj.x = data[i]._id;
+            obj.x = data[i]["_id"]//.split("T")[0];
             obj.y = [data[i]["OpenPrice"][0],data[i]["HighestPrice"][0],data[i]["LowestPrice"][0],data[i]["closePrice"][0]]
             returnData.push(obj);
         }   
