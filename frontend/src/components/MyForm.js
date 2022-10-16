@@ -9,7 +9,7 @@ import axios from 'axios'
 import apiService from '../services/api'
 
 const MyForm = (props) => {
-   let {startDate,setstartDate,endDate,setendDate,setdata} = props;
+   let {startDate,setstartDate,endDate,setendDate,setmydata} = props;
    const [selectedStocks, setselectedStocks] = useState([]);
    const [stocks, setstocks] = useState([]);
    apiService.get("http://localhost:7000/getListOfAllStocks").then(res =>{
@@ -33,7 +33,7 @@ const MyForm = (props) => {
     e.preventDefault();
     apiService.get(`http://localhost:7000/getStockDetails?startTime=${new Date(startDate).getTime()}&endTime=${new Date(endDate).getTime()}&listOfStocks=${selectedStocks.toString()}`)
     .then((res)=>{
-        setdata(res.response.data.data);
+        setmydata(res.response.data.data);
         // console.log();
     }).catch(error=>{
         console.log(error.message);
@@ -50,7 +50,8 @@ const MyForm = (props) => {
                 <FormControl>
                   <FormLabel>Start Date</FormLabel>
                   <Input type="Date" defaultValue={startDate} onChange={e => {setstartDate(e.target.value)}}></Input>
-
+                </FormControl>
+                <FormControl>
                   <FormLabel>End Date</FormLabel>
                   <Input type="Date" defaultValue={endDate} onChange={e => {setendDate(e.target.value)}}></Input> 
                   <FormHelperText></FormHelperText>
